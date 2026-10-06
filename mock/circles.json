@@ -1,0 +1,210 @@
+{
+  "circles": [
+    {
+      "id": "cmo8ovuh000030m36dniodrfh",
+      "name": "Orizzon II",
+      "description": "",
+      "goalAmount": 8000,
+      "paymentAmount": 2667,
+      "paymentPeriod": "BIWEEKLY",
+      "firstPaymentDueDate": "2026-04-30T05:00:00.000Z",
+      "status": "PENDING",
+      "currentParticipants": 1,
+      "targetParticipants": 12,
+      "createdAt": "2026-04-21T13:58:32.196Z",
+      "updatedAt": "2026-04-21T13:58:32.196Z",
+      "creatorId": "cmo8okdbu00010mlw3rdw45ph",
+      "creator": {
+        "id": "cmo8okdbu00010mlw3rdw45ph",
+        "firstName": "Ricardo",
+        "lastName": "Gonzales",
+        "email": "js.ricardo.gonzales@gmail.com",
+        "avatarUrl": "https://wuardadito-dev-user-avatars.s3.us-east-1.amazonaws.com/avatars/cmo8okdbu00010mlw3rdw45ph/1776779448019.jpg"
+      },
+      "members": [
+        {
+          "id": "cmo8ovuh000050m369guv5s7c",
+          "userId": "cmo8okdbu00010mlw3rdw45ph",
+          "circleId": "cmo8ovuh000030m36dniodrfh",
+          "position": null,
+          "joinedAt": "2026-04-21T13:58:32.196Z",
+          "user": {
+            "id": "cmo8okdbu00010mlw3rdw45ph",
+            "firstName": "Ricardo",
+            "lastName": "Gonzales",
+            "email": "js.ricardo.gonzales@gmail.com",
+            "avatarUrl": "https://wuardadito-dev-user-avatars.s3.us-east-1.amazonaws.com/avatars/cmo8okdbu00010mlw3rdw45ph/1776779448019.jpg"
+          }
+        }
+      ],
+      "invitations": [
+        {
+          "id": "cmo8ovx5000070m36yb92baca",
+          "circleId": "cmo8ovuh000030m36dniodrfh",
+          "invitedEmail": "ricardo.gonzales.b@icloud.com",
+          "invitedUserId": "cmo8okdc800020mlwu9y5rvwv",
+          "status": "PENDING",
+          "invitedAt": "2026-04-21T13:58:35.652Z",
+          "respondedAt": null,
+          "invitedUser": {
+            "id": "cmo8okdc800020mlwu9y5rvwv",
+            "firstName": "Rick",
+            "lastName": "McPato",
+            "email": "ricardo.gonzales.b@icloud.com"
+          }
+        },
+        {
+          "id": "cmo8ovxxd00090m36hhysz4my",
+          "circleId": "cmo8ovuh000030m36dniodrfh",
+          "invitedEmail": "ricardogonzalesbm@gmail.com",
+          "invitedUserId": "cmo8okcjl00000mlwb66kofcp",
+          "status": "PENDING",
+          "invitedAt": "2026-04-21T13:58:35.652Z",
+          "respondedAt": null,
+          "invitedUser": {
+            "id": "cmo8okcjl00000mlwb66kofcp",
+            "firstName": "Jose",
+            "lastName": "Biminchumo",
+            "email": "ricardogonzalesbm@gmail.com"
+          }
+        }
+      ],
+      "drawPositions": [],
+      "payments": []
+    },
+    {
+      "id": "cmo8oke5000050mlwj9pzyg7g",
+      "name": "Foxy Lovers",
+      "description": "Saving for our foxy adventures",
+      "goalAmount": 3000,
+      "paymentAmount": 1000,
+      "paymentPeriod": "WEEKLY",
+      "firstPaymentDueDate": "2026-04-28T13:49:37.810Z",
+      "status": "COMPLETED",
+      "currentParticipants": 3,
+      "targetParticipants": 3,
+      "createdAt": "2026-04-21T13:49:37.812Z",
+      "updatedAt": "2026-04-21T14:01:20.814Z",
+      "creatorId": "cmo8okdbu00010mlw3rdw45ph",
+      "creator": {
+        "id": "cmo8okdbu00010mlw3rdw45ph",
+        "firstName": "Ricardo",
+        "lastName": "Gonzales",
+        "email": "js.ricardo.gonzales@gmail.com",
+        "avatarUrl": "https://wuardadito-dev-user-avatars.s3.us-east-1.amazonaws.com/avatars/cmo8okdbu00010mlw3rdw45ph/1776779448019.jpg"
+      },
+      "members": [
+        {
+          "id": "cmo8okel100090mlwaqgtzmiq",
+          "userId": "cmo8okcjl00000mlwb66kofcp",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "position": 2,
+          "joinedAt": "2026-04-21T13:49:38.390Z",
+          "user": {
+            "id": "cmo8okcjl00000mlwb66kofcp",
+            "firstName": "Jose",
+            "lastName": "Biminchumo",
+            "email": "ricardogonzalesbm@gmail.com",
+            "avatarUrl": "https://wuardadito-dev-user-avatars.s3.us-east-1.amazonaws.com/avatars/cmo8okcjl00000mlwb66kofcp/1776779527869.jpg"
+          }
+        },
+        {
+          "id": "cmo8opdk600010m36t9f1ngua",
+          "userId": "cmo8okdc800020mlwu9y5rvwv",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "position": 3,
+          "joinedAt": "2026-04-21T13:53:30.340Z",
+          "user": {
+            "id": "cmo8okdc800020mlwu9y5rvwv",
+            "firstName": "Rick",
+            "lastName": "McPato",
+            "email": "ricardo.gonzales.b@icloud.com",
+            "avatarUrl": "https://wuardadito-dev-user-avatars.s3.us-east-1.amazonaws.com/avatars/cmo8okdc800020mlwu9y5rvwv/1776779588866.jpg"
+          }
+        },
+        {
+          "id": "cmo8oked200070mlw2q295aie",
+          "userId": "cmo8okdbu00010mlw3rdw45ph",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "position": 1,
+          "joinedAt": "2026-04-21T13:49:38.102Z",
+          "user": {
+            "id": "cmo8okdbu00010mlw3rdw45ph",
+            "firstName": "Ricardo",
+            "lastName": "Gonzales",
+            "email": "js.ricardo.gonzales@gmail.com",
+            "avatarUrl": "https://wuardadito-dev-user-avatars.s3.us-east-1.amazonaws.com/avatars/cmo8okdbu00010mlw3rdw45ph/1776779448019.jpg"
+          }
+        }
+      ],
+      "invitations": [
+        {
+          "id": "cmo8okep2000b0mlw8nqkc0y4",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "invitedEmail": "ricardo.gonzales.b@icloud.com",
+          "invitedUserId": "cmo8okdc800020mlwu9y5rvwv",
+          "status": "ACCEPTED",
+          "invitedAt": "2026-04-21T13:49:38.534Z",
+          "respondedAt": "2026-04-21T13:53:30.053Z",
+          "invitedUser": {
+            "id": "cmo8okdc800020mlwu9y5rvwv",
+            "firstName": "Rick",
+            "lastName": "McPato",
+            "email": "ricardo.gonzales.b@icloud.com"
+          }
+        }
+      ],
+      "drawPositions": [
+        {
+          "id": "cmo8oy3o8000a0m36fn17767a",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "userId": "cmo8okcjl00000mlwb66kofcp",
+          "position": 2,
+          "createdAt": "2026-04-21T14:00:17.432Z"
+        },
+        {
+          "id": "cmo8oy3o8000b0m36ejnpe06d",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "userId": "cmo8okdc800020mlwu9y5rvwv",
+          "position": 3,
+          "createdAt": "2026-04-21T14:00:17.432Z"
+        }
+      ],
+      "payments": [
+        {
+          "id": "cmo8oy5nb000d0m36dim1h0wg",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "roundNumber": 1,
+          "recipientUserId": "cmo8okdbu00010mlw3rdw45ph",
+          "totalAmount": 3000,
+          "status": "PAID",
+          "dueDate": "2026-04-28T13:49:37.810Z",
+          "paidAt": "2026-04-21T14:00:49.045Z",
+          "createdAt": "2026-04-21T14:00:19.991Z"
+        },
+        {
+          "id": "cmo8oy63a000f0m367qkblyah",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "roundNumber": 2,
+          "recipientUserId": "cmo8okcjl00000mlwb66kofcp",
+          "totalAmount": 3000,
+          "status": "PAID",
+          "dueDate": "2026-05-05T13:49:37.810Z",
+          "paidAt": "2026-04-21T14:01:07.114Z",
+          "createdAt": "2026-04-21T14:00:20.566Z"
+        },
+        {
+          "id": "cmo8oy6b8000h0m36oo8yv6g8",
+          "circleId": "cmo8oke5000050mlwj9pzyg7g",
+          "roundNumber": 3,
+          "recipientUserId": "cmo8okdc800020mlwu9y5rvwv",
+          "totalAmount": 3000,
+          "status": "PAID",
+          "dueDate": "2026-05-12T13:49:37.810Z",
+          "paidAt": "2026-04-21T14:01:19.394Z",
+          "createdAt": "2026-04-21T14:00:20.852Z"
+        }
+      ]
+    }
+  ]
+}
