@@ -31,6 +31,39 @@ import React, { useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+type PaymentPeriod = "WEEKLY" | "BIWEEKLY" | "MONTHLY";
+
+const calculateFirstPaymentDate = (period: PaymentPeriod) => {
+  const today = new Date();
+  const currentDay = today.getDate();
+
+  switch (period) {
+    case PAYMENT_CONSTANTS.WEEKLY.value: {
+      const daysUntilFriday = (5 - today.getDay() + 7) % 7;
+      const nextFriday = new Date(today);
+      nextFriday.setDate(today.getDate() + daysUntilFriday);
+      return nextFriday;
+    }
+    case PAYMENT_CONSTANTS.BIWEEKLY.value: {
+      const targetDay = currentDay <= 15 ? 15 : 30;
+      const biweeklyDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        targetDay,
+      );
+      if (biweeklyDate <= today) {
+        biweeklyDate.setMonth(today.getMonth() + 1);
+        biweeklyDate.setDate(targetDay === 15 ? 15 : 30);
+      }
+      return biweeklyDate;
+    }
+    case PAYMENT_CONSTANTS.MONTHLY.value:
+      return new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    default:
+      return today;
+  }
+};
+
 export default function CreateCircleScreen() {
   const theme = useTheme<Theme>();
   const insets = useSafeAreaInsets();
@@ -40,16 +73,16 @@ export default function CreateCircleScreen() {
   const [goalAmount, setGoalAmount] = useState(String(GOAL_AMOUNT.default));
   const [emails, setEmails] = useState(["", ""]);
   const [emailErrors, setEmailErrors] = useState<string[]>([]);
-  const [paymentPeriod, setPaymentPeriod] = useState<
-    "WEEKLY" | "BIWEEKLY" | "MONTHLY"
-  >("MONTHLY");
+  const [paymentPeriod, setPaymentPeriod] = useState<PaymentPeriod>("MONTHLY");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [createdCircle, setCreatedCircle] = useState<Circle | null>(null);
   const [invitedCount, setInvitedCount] = useState(0);
-  const [firstPaymentDate, setFirstPaymentDate] = useState<Date>(new Date());
+  const [firstPaymentDate, setFirstPaymentDate] = useState<Date>(() =>
+    calculateFirstPaymentDate("MONTHLY"),
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const validEmails = emails.filter((e) => e.trim() !== "" && validateEmail(e));
@@ -58,42 +91,11 @@ export default function CreateCircleScreen() {
       ? Math.round(Number(goalAmount) / (validEmails.length + 1))
       : 0;
 
-  const calculateFirstPaymentDate = (
-    period: "WEEKLY" | "BIWEEKLY" | "MONTHLY",
-  ) => {
-    const today = new Date();
-    const currentDay = today.getDate();
-
-    switch (period) {
-      case PAYMENT_CONSTANTS.WEEKLY.value: {
-        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
-        const nextFriday = new Date(today);
-        nextFriday.setDate(today.getDate() + daysUntilFriday);
-        return nextFriday;
-      }
-      case PAYMENT_CONSTANTS.BIWEEKLY.value: {
-        const targetDay = currentDay <= 15 ? 15 : 30;
-        const biweeklyDate = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          targetDay,
-        );
-        if (biweeklyDate <= today) {
-          biweeklyDate.setMonth(today.getMonth() + 1);
-          biweeklyDate.setDate(targetDay === 15 ? 15 : 30);
-        }
-        return biweeklyDate;
-      }
-      case PAYMENT_CONSTANTS.MONTHLY.value:
-        return new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      default:
-        return today;
-    }
-  };
-
-  React.useEffect(() => {
-    setFirstPaymentDate(calculateFirstPaymentDate(paymentPeriod));
-  }, [paymentPeriod]);
+  function handlePaymentPeriodChange(period: PaymentPeriod) {
+    if (period === paymentPeriod) return;
+    setPaymentPeriod(period);
+    setFirstPaymentDate(calculateFirstPaymentDate(period));
+  }
 
   function validateEmail(email: string) {
     return /^\S+@\S+\.\S+$/.test(email);
@@ -193,8 +195,6 @@ export default function CreateCircleScreen() {
     { title: "Resumen", icon: BadgeInfo },
   ];
 
-  const StepIcon = steps[step - 1].icon;
-
   if (success && createdCircle) {
     return (
       <CircleCreationResult
@@ -291,7 +291,7 @@ export default function CreateCircleScreen() {
               firstPaymentDate={firstPaymentDate}
               showDatePicker={showDatePicker}
               error={error}
-              onPaymentPeriodChange={setPaymentPeriod}
+              onPaymentPeriodChange={handlePaymentPeriodChange}
               onFirstPaymentDateChange={setFirstPaymentDate}
               onToggleDatePicker={() => setShowDatePicker((open) => !open)}
             />

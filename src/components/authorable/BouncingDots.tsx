@@ -1,6 +1,6 @@
 import { Theme } from "@/theme";
 import { useTheme } from "@shopify/restyle";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Animated, Easing } from "react-native";
 import { Box } from "./Box";
 
@@ -14,11 +14,11 @@ export const BouncingDots: React.FC<BouncingDotsProps> = ({
   height = 6,
 }) => {
   const theme = useTheme<Theme>();
-  const dotAnims = useRef([
+  const [dotAnims] = useState(() => [
     new Animated.Value(0),
     new Animated.Value(0),
     new Animated.Value(0),
-  ]).current;
+  ]);
 
   useEffect(() => {
     const animations = dotAnims.map((anim, index) =>

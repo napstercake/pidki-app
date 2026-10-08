@@ -31,10 +31,6 @@ export default function HomeScreen() {
     return <LoadingSpinner fullScreen />;
   }
 
-  const activeCircles = circles.filter(
-    (circle: any) => circle.status === CIRCLE_STATUS.active,
-  );
-
   const completedCircles = circles.filter(
     (circle: any) => circle.status === CIRCLE_STATUS.completed,
   );

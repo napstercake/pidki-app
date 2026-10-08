@@ -1,7 +1,7 @@
 import { Theme } from "@/theme";
 import { formatCurrency } from "@/utils/common";
 import { useTheme } from "@shopify/restyle";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { Animated, PanResponder, View } from "react-native";
 import { Box } from "./Box";
 import { Text } from "./Text";
@@ -59,36 +59,51 @@ export const Slider: React.FC<SliderProps> = ({
 
   const dragStartX = useRef(0);
 
-  const currentValueRef = useRef(currentValue);
-  currentValueRef.current = currentValue;
+  // Latest props/derived values for the gesture handlers, so the PanResponder
+  // can be created once without capturing stale closures.
+  const latest = useRef({
+    currentValue,
+    trackWidth,
+    disabled,
+    valueToX,
+    xToValue,
+    onValueChange,
+    onSlidingComplete,
+  });
+  useLayoutEffect(() => {
+    latest.current = {
+      currentValue,
+      trackWidth,
+      disabled,
+      valueToX,
+      xToValue,
+      onValueChange,
+      onSlidingComplete,
+    };
+  });
 
-  const trackWidthRef = useRef(trackWidth);
-  trackWidthRef.current = trackWidth;
-
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => !disabled,
-        onMoveShouldSetPanResponder: () => !disabled,
-        onPanResponderGrant: () => {
-          dragStartX.current = valueToX(
-            currentValueRef.current,
-            trackWidthRef.current,
-          );
-        },
-        onPanResponderMove: (_, gestureState) => {
-          const width = trackWidthRef.current;
-          const nextX = dragStartX.current + gestureState.dx;
-          const clampedX = Math.min(width, Math.max(0, nextX));
-          const nextValue = xToValue(clampedX, width);
-          setInternalValue(nextValue);
-          onValueChange?.(nextValue);
-        },
-        onPanResponderRelease: () => {
-          onSlidingComplete?.(currentValueRef.current);
-        },
-      }),
-    [disabled, minimumValue, maximumValue, step],
+  // The handlers below only run in response to gestures, never during render.
+  // eslint-disable-next-line react-hooks/refs
+  const [panResponder] = useState(() =>
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => !latest.current.disabled,
+      onMoveShouldSetPanResponder: () => !latest.current.disabled,
+      onPanResponderGrant: () => {
+        const { currentValue, trackWidth, valueToX } = latest.current;
+        dragStartX.current = valueToX(currentValue, trackWidth);
+      },
+      onPanResponderMove: (_, gestureState) => {
+        const { trackWidth: width, xToValue, onValueChange } = latest.current;
+        const nextX = dragStartX.current + gestureState.dx;
+        const clampedX = Math.min(width, Math.max(0, nextX));
+        const nextValue = xToValue(clampedX, width);
+        setInternalValue(nextValue);
+        onValueChange?.(nextValue);
+      },
+      onPanResponderRelease: () => {
+        latest.current.onSlidingComplete?.(latest.current.currentValue);
+      },
+    }),
   );
 
   const thumbX = trackWidth > 0 ? valueToX(currentValue, trackWidth) : 0;

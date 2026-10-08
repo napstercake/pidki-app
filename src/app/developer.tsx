@@ -1,12 +1,10 @@
 import { Text } from "@/components/authorable/Text";
 import { AppName } from "@/constants/Common";
-import { Theme } from "@/theme";
-import { useTheme } from "@shopify/restyle";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import { ArrowLeft, ArrowUpRight, Sparkles } from "lucide-react-native";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   StatusBar,
@@ -18,16 +16,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const STUDIO_URL = "https://headboxstudio.com";
 
 export default function DeveloperScreen() {
-  const theme = useTheme<Theme>();
   const insets = useSafeAreaInsets();
 
-  const fadeIn = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(40)).current;
-  const glowPulse = useRef(new Animated.Value(0.4)).current;
-  const taglineSlide = useRef(new Animated.Value(30)).current;
-  const taglineFade = useRef(new Animated.Value(0)).current;
-  const ctaSlide = useRef(new Animated.Value(30)).current;
-  const ctaFade = useRef(new Animated.Value(0)).current;
+  const [fadeIn] = useState(() => new Animated.Value(0));
+  const [slideUp] = useState(() => new Animated.Value(40));
+  const [glowPulse] = useState(() => new Animated.Value(0.4));
+  const [taglineSlide] = useState(() => new Animated.Value(30));
+  const [taglineFade] = useState(() => new Animated.Value(0));
+  const [ctaSlide] = useState(() => new Animated.Value(30));
+  const [ctaFade] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.sequence([
@@ -83,7 +80,7 @@ export default function DeveloperScreen() {
         }),
       ]),
     ).start();
-  }, []);
+  }, [fadeIn, slideUp, taglineFade, taglineSlide, ctaFade, ctaSlide, glowPulse]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#000" }}>

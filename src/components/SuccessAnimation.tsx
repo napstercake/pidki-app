@@ -1,11 +1,11 @@
 import { Box } from '@/components/authorable/Box';
 import { Check } from 'lucide-react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated } from 'react-native';
 
 export default function SuccessAnimation() {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const [scaleAnim] = useState(() => new Animated.Value(0));
+  const [opacityAnim] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.sequence([
@@ -32,7 +32,7 @@ export default function SuccessAnimation() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [scaleAnim, opacityAnim]);
 
   return (
     <Box justifyContent="center" alignItems="center" backgroundColor="transparent">

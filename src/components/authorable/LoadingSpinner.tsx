@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Animated, Easing } from "react-native";
 import { Box } from "./Box";
 import { Text } from "./Text";
@@ -12,7 +12,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text,
   fullScreen = false,
 }) => {
-  const bounceAnim = useRef(new Animated.Value(0)).current;
+  const [bounceAnim] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const animation = Animated.loop(

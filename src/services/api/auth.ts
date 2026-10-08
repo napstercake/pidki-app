@@ -11,10 +11,8 @@ const request = async <T>(endpoint: string, options: RequestInit = {}, token?: s
   if (token) headers.Authorization = `Bearer ${token}`;
   
   try {
-    console.log('[api] →', options.method ?? 'GET', url); // TODO(debug): remove
     const response = await fetch(url, { ...options, headers });
     const data = await response.json();
-    console.log('[api] ←', response.status, JSON.stringify(data)); // TODO(debug): remove
 
     if (!response.ok) throw new Error(data.message || 'API request failed');
     return data;

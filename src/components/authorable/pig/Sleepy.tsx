@@ -42,7 +42,7 @@ const Sleepy = () => {
     animateZ(z1o, z1y, 0);
     animateZ(z2o, z2y, 600);
     animateZ(z3o, z3y, 1200);
-  }, []);
+  }, [z1o, z1y, z2o, z2y, z3o, z3y]);
 
   return (
     <View style={{ width: 160, height: 140 }}>

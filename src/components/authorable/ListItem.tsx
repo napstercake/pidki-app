@@ -1,7 +1,7 @@
 import { Theme } from "@/theme";
 import React from "react";
 import { TouchableOpacity } from "react-native";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 import { Badge } from "./Badge";
 import { Box } from "./Box";
 import { Button } from "./Button";

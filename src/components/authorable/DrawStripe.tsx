@@ -45,7 +45,7 @@ function Slot({ item, index }: { item: SlotItem; index: number }) {
       withSpring(1, { damping: 12, stiffness: 120 }),
     );
     opacity.value = withDelay(index * 150, withSpring(1));
-  }, []);
+  }, [index, opacity, scale]);
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -90,7 +90,7 @@ function Arrow({ index }: { index: number }) {
 
   useEffect(() => {
     opacity.value = withDelay(index * 150 + 75, withSpring(1));
-  }, []);
+  }, [index, opacity]);
 
   const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 

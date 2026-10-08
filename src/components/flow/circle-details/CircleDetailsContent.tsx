@@ -4,14 +4,14 @@ import { Box } from "@/components/authorable/Box";
 import { Button } from "@/components/authorable/Button";
 import CircleBadge from "@/components/authorable/CircleBadge";
 import CircleIcon from "@/components/authorable/CircleIcon";
-import ErrorScreen from "@/components/authorable/ErrorScreen";
+import { ErrorScreen } from "@/components/authorable/ErrorScreen";
 import Gradient from "@/components/authorable/Gradient";
 import IconButton from "@/components/authorable/IconButton";
 import List from "@/components/authorable/List";
 import { LoadingSpinner } from "@/components/authorable/LoadingSpinner";
 import NotificationItem from "@/components/authorable/NotificationItem";
 import Pot from "@/components/authorable/Pot";
-import StatusLabel from "@/components/authorable/StatusLabel";
+import { StatusLabel } from "@/components/authorable/StatusLabel";
 import { Text } from "@/components/authorable/Text";
 import Timeline from "@/components/authorable/Timeline";
 import CircleDetailsContentCompleted from "@/components/flow/circle-details/CircleDetailsContentCompleted";
@@ -19,7 +19,6 @@ import CircleDraw from "@/components/flow/circle-draw/CircleDraw";
 import {
   CIRCLE_INVITATION,
   CIRCLE_STATUS,
-  ROUND_TEXTS,
 } from "@/constants/circles";
 import {
   useCancelCircle,
@@ -47,7 +46,7 @@ import {
   Trash2,
   X,
 } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   Easing,
@@ -64,7 +63,7 @@ const CloseRoundCTA: React.FC<{
   onPress: () => void;
   iconColor: string;
 }> = ({ title, onPress, iconColor }) => {
-  const scale = useRef(new Animated.Value(1)).current;
+  const [scale] = useState(() => new Animated.Value(1));
 
   useEffect(() => {
     const pulse = Animated.loop(
@@ -125,6 +124,7 @@ const CircleDetailsContent = () => {
   const { token, user } = useAuth();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelConfirmation, setCancelConfirmation] = useState("");
+  const [cancelError, setCancelError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
@@ -162,12 +162,19 @@ const CircleDetailsContent = () => {
   const verifyPaymentMutation = useVerifyPayment(id ?? "");
   const confirmMemberPaymentMutation = useConfirmMemberPayment(id ?? "");
 
-  useEffect(() => {
+  const [shownCircleError, setShownCircleError] = useState<typeof circleError>(null);
+  if (circleError !== shownCircleError) {
+    setShownCircleError(circleError);
     if (circleError) {
-      console.error("Error fetching circle:", circleError);
       setDialogTitle("Error");
       setDialogMessage("No se pudo cargar el círculo");
       setShowErrorDialog(true);
+    }
+  }
+
+  useEffect(() => {
+    if (circleError) {
+      console.error("Error fetching circle:", circleError);
     }
   }, [circleError]);
 
@@ -315,37 +322,33 @@ const CircleDetailsContent = () => {
   const handleCancelCircle = async () => {
     if (!circle) return;
 
+    // Errors are shown inside the cancel modal: opening the error dialog (a
+    // second Modal) on top of it leaves the screen unresponsive.
     if (cancelConfirmation !== circle.name) {
-      setDialogTitle("Error");
-      setDialogMessage(
+      setCancelError(
         "Por favor escribe exactamente el nombre del círculo para confirmar la cancelación.",
       );
-      setShowErrorDialog(true);
       return;
     }
 
+    setCancelError(null);
     try {
       await cancelCircleMutation.mutateAsync(circle.id);
-      setShowCancelModal(false);
-      setCancelConfirmation("");
+      closeCancelModal();
       router.replace("/circles");
     } catch (error: any) {
-      console.error("Error cancelling circle:", error);
-      setDialogTitle("Error");
-      setDialogMessage(error.message || "No se pudo cancelar el círculo.");
-      setShowErrorDialog(true);
+      setCancelError(
+        circle.status === CIRCLE_STATUS.active
+          ? "Un círculo activo no se puede eliminar."
+          : error?.message || "No se pudo cancelar el círculo.",
+      );
     }
   };
 
-  const getCTAText = () => {
-    const currentPayment = getCurrentPendingPayment(circle!);
-    if (!currentPayment) return "No hay pagos pendientes";
-
-    const roundNumber = currentPayment.roundNumber;
-    const roundText =
-      ROUND_TEXTS[roundNumber as keyof typeof ROUND_TEXTS] || `${roundNumber}ª`;
-
-    return `Completar ${roundText} Ronda`;
+  const closeCancelModal = () => {
+    setShowCancelModal(false);
+    setCancelConfirmation("");
+    setCancelError(null);
   };
 
   if (isInitialLoading) {
@@ -383,11 +386,6 @@ const CircleDetailsContent = () => {
   }
 
   const isCreator = circle.creatorId === user?.id;
-  const canPerformDraw =
-    isCreator &&
-    (circle.status === CIRCLE_STATUS.pending ||
-      circle.status === CIRCLE_STATUS.readyToDraw) &&
-    circle.currentParticipants >= 3;
 
   return (
     <Box flex={1} backgroundColor="background">
@@ -486,7 +484,6 @@ const CircleDetailsContent = () => {
               title="Pago pendiente"
               subtitle={formatCurrency(circle.paymentAmount)}
               icon={<Clock size={20} color="white" />}
-              actionLabel="Pagar"
               onAction={() => {}}
             />
           ) : null}
@@ -753,7 +750,10 @@ const CircleDetailsContent = () => {
         visible={showCancelModal}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowCancelModal(false)}
+        onRequestClose={() => {
+          if (cancelCircleMutation.isPending) return;
+          closeCancelModal();
+        }}
       >
         <Box
           flex={1}
@@ -804,19 +804,26 @@ const CircleDetailsContent = () => {
                 }}
                 placeholder="Escribe el nombre del círculo"
                 value={cancelConfirmation}
-                onChangeText={setCancelConfirmation}
+                onChangeText={(text) => {
+                  setCancelConfirmation(text);
+                  setCancelError(null);
+                }}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!cancelCircleMutation.isPending}
               />
+              {cancelError && (
+                <Text variant="caption" color="error" marginTop="s">
+                  {cancelError}
+                </Text>
+              )}
             </Box>
 
             <Box flexDirection="row" alignItems="center" gap="m">
               <TouchableOpacity
                 onPress={() => {
                   if (cancelCircleMutation.isPending) return;
-                  setShowCancelModal(false);
-                  setCancelConfirmation("");
+                  closeCancelModal();
                 }}
                 activeOpacity={0.7}
               >

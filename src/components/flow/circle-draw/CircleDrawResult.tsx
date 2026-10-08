@@ -10,7 +10,7 @@ import { formatDate } from "@/utils/common";
 import { useTheme } from "@shopify/restyle";
 import * as Sharing from "expo-sharing";
 import { Send } from "lucide-react-native";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -47,12 +47,12 @@ const ConfettiPiece: React.FC<ConfettiPieceProps> = ({
   size,
   shape,
 }) => {
-  const translateY = useRef(new Animated.Value(-20)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
-  const translateX = useRef(new Animated.Value(0)).current;
-  const drift = useRef((Math.random() - 0.5) * 100).current;
-  const spinDirection = useRef(Math.random() > 0.5 ? 1 : -1).current;
+  const [translateY] = useState(() => new Animated.Value(-20));
+  const [opacity] = useState(() => new Animated.Value(0));
+  const [rotate] = useState(() => new Animated.Value(0));
+  const [translateX] = useState(() => new Animated.Value(0));
+  const [drift] = useState(() => (Math.random() - 0.5) * 100);
+  const [spinDirection] = useState(() => (Math.random() > 0.5 ? 1 : -1));
 
   useEffect(() => {
     Animated.sequence([
@@ -91,7 +91,7 @@ const ConfettiPiece: React.FC<ConfettiPieceProps> = ({
         ]),
       ]),
     ]).start();
-  }, []);
+  }, [delay, drift, opacity, rotate, translateX, translateY]);
 
   const spin = rotate.interpolate({
     inputRange: [0, 1],
@@ -120,7 +120,7 @@ const ConfettiPiece: React.FC<ConfettiPieceProps> = ({
 };
 
 const Confetti: React.FC = () => {
-  const pieces = useRef(
+  const [pieces] = useState(() =>
     Array.from({ length: 55 }, (_, i) => ({
       id: i,
       x: Math.random() * SCREEN_WIDTH,
@@ -132,7 +132,7 @@ const Confetti: React.FC = () => {
         Math.floor(Math.random() * 3)
       ],
     })),
-  ).current;
+  );
 
   return (
     <View

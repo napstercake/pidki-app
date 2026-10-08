@@ -43,7 +43,9 @@ function RateMembersContent() {
   const { user } = useAuth();
   const rateUserMutation = useRateUser();
   const isLoading = rateUserMutation.isPending;
-  const [ratings, setRatings] = useState<MemberRating[]>([]);
+  const [ratingByUserId, setRatingByUserId] = useState<Record<string, number>>(
+    {},
+  );
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
@@ -60,26 +62,20 @@ function RateMembersContent() {
     }
   }, [circleData]);
 
-  // Initialize ratings for all members (excluding creator)
-  React.useEffect(() => {
-    if (!circle || !user) return;
+  // Ratings for all members (excluding the current user), unrated ones default to 0
+  const ratings: MemberRating[] = useMemo(() => {
+    if (!circle || !user) return [];
 
-    const membersToRate = circle.members.filter(
-      (member) => member.userId !== user.id,
-    );
-    const initialRatings = membersToRate.map((member) => ({
-      userId: member.userId,
-      rating: 0,
-    }));
-    setRatings(initialRatings);
-  }, [circle, user]);
+    return circle.members
+      .filter((member) => member.userId !== user.id)
+      .map((member) => ({
+        userId: member.userId,
+        rating: ratingByUserId[member.userId] ?? 0,
+      }));
+  }, [circle, user, ratingByUserId]);
 
   const handleRatingChange = (userId: string, newRating: number) => {
-    setRatings((prev) =>
-      prev.map((rating) =>
-        rating.userId === userId ? { ...rating, rating: newRating } : rating,
-      ),
-    );
+    setRatingByUserId((prev) => ({ ...prev, [userId]: newRating }));
   };
 
   const handleSubmitRatings = async () => {
