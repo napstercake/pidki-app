@@ -10,9 +10,7 @@ import IconButton from "@/components/authorable/IconButton";
 import { LoadingSpinner } from "@/components/authorable/LoadingSpinner";
 import { StatusLabel } from "@/components/authorable/StatusLabel";
 import { Text } from "@/components/authorable/Text";
-import CircleDrawResult from "@/components/flow/circle-draw/CircleDrawResult";
 import { usePerformDraw } from "@/hooks/mutations/useCircleMutations";
-import { useCircle } from "@/hooks/queries/useCircles";
 import { useAuth } from "@/services/AuthContext";
 import { Theme } from "@/theme";
 import { Circle } from "@/types/api";
@@ -26,17 +24,16 @@ import { ScrollView } from "react-native";
 
 interface CircleDrawProps {
   circle: Circle;
+  onDrawCompleted: (circle: Circle) => void;
 }
 
-const CircleDraw = ({ circle }: CircleDrawProps) => {
+const CircleDraw = ({ circle, onDrawCompleted }: CircleDrawProps) => {
   const theme = useTheme<Theme>();
   const { user } = useAuth();
   const performDrawMutation = usePerformDraw(circle.id);
-  const { refetch: refetchCircle } = useCircle(circle.id);
   const [showDrawDialog, setShowDrawDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [drawnCircle, setDrawnCircle] = useState<Circle | null>(null);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogMessage, setDialogMessage] = useState<ReactNode>("");
 
@@ -55,9 +52,8 @@ const CircleDraw = ({ circle }: CircleDrawProps) => {
     setShowDrawDialog(false);
 
     try {
-      await performDrawMutation.mutateAsync();
-      const { data } = await refetchCircle();
-      if (data) setDrawnCircle(data.circle);
+      const { circle: drawnCircle } = await performDrawMutation.mutateAsync();
+      onDrawCompleted(drawnCircle);
     } catch (error) {
       console.error("Error performing draw:", error);
       setDialogTitle("Error");
@@ -68,12 +64,6 @@ const CircleDraw = ({ circle }: CircleDrawProps) => {
 
   if (performDrawMutation.isPending) {
     return <LoadingSpinner fullScreen text="Procesando..." />;
-  }
-
-  if (drawnCircle) {
-    return (
-      <CircleDrawResult circle={drawnCircle} onStart={() => router.back()} />
-    );
   }
 
   return (

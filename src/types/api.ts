@@ -135,8 +135,10 @@ export interface RemindInvitationsResponse {
 }
 
 export interface DrawResponse {
+  success: boolean;
   message: string;
   circleId: string;
+  circle: Circle;
 }
 
 export type ActivityType =

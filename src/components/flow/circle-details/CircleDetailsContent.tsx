@@ -16,6 +16,7 @@ import { Text } from "@/components/authorable/Text";
 import Timeline from "@/components/authorable/Timeline";
 import CircleDetailsContentCompleted from "@/components/flow/circle-details/CircleDetailsContentCompleted";
 import CircleDraw from "@/components/flow/circle-draw/CircleDraw";
+import CircleDrawResult from "@/components/flow/circle-draw/CircleDrawResult";
 import {
   CIRCLE_INVITATION,
   CIRCLE_STATUS,
@@ -125,6 +126,9 @@ const CircleDetailsContent = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelConfirmation, setCancelConfirmation] = useState("");
   const [cancelError, setCancelError] = useState<string | null>(null);
+  // Kept here (not in CircleDraw) because the draw flips the circle to ACTIVE,
+  // which unmounts CircleDraw once the refetched circle arrives.
+  const [drawnCircle, setDrawnCircle] = useState<Circle | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
@@ -351,6 +355,15 @@ const CircleDetailsContent = () => {
     setCancelError(null);
   };
 
+  if (drawnCircle) {
+    return (
+      <CircleDrawResult
+        circle={drawnCircle}
+        onStart={() => router.back()}
+      />
+    );
+  }
+
   if (isInitialLoading) {
     return <LoadingSpinner fullScreen text="Cargando círculo..." />;
   }
@@ -368,7 +381,7 @@ const CircleDetailsContent = () => {
   }
 
   if (circle.status === CIRCLE_STATUS.readyToDraw) {
-    return <CircleDraw circle={circle} />;
+    return <CircleDraw circle={circle} onDrawCompleted={setDrawnCircle} />;
   }
 
   if (circle.status === CIRCLE_STATUS.completed) {
@@ -386,6 +399,26 @@ const CircleDetailsContent = () => {
   }
 
   const isCreator = circle.creatorId === user?.id;
+  // The round's recipient doesn't pay themselves, so they have nothing pending.
+  const isCurrentRecipient =
+    getCurrentPendingPayment(circle)?.recipientUserId === user?.id;
+
+  const isActive = circle.status === CIRCLE_STATUS.active;
+  const showCloseRoundCTA = isActive && isCreator && !!roundDeposits?.allConfirmed;
+  const showPendingPayment =
+    isActive &&
+    !isCurrentRecipient &&
+    !roundDeposits?.allConfirmed &&
+    !roundDeposits?.deposits.some((d) => d.memberId === user?.id);
+  const showSendReminder =
+    isCreator &&
+    circle.status === CIRCLE_STATUS.pending &&
+    circle.invitations.some(
+      (invitation) => invitation.status === CIRCLE_INVITATION.pending,
+    );
+  // Cards below the header overlap the gradient via a negative margin, so the
+  // gradient only reserves room for them when one is actually shown.
+  const hasHeaderCard = showCloseRoundCTA || showPendingPayment || showSendReminder;
 
   return (
     <Box flex={1} backgroundColor="background">
@@ -400,7 +433,7 @@ const CircleDetailsContent = () => {
         <Box
           paddingHorizontal="l"
           paddingTop="xxl"
-          paddingBottom="xxxl"
+          paddingBottom={hasHeaderCard ? "xxxl" : "l"}
           gap="m"
         >
           <Box
@@ -452,13 +485,13 @@ const CircleDetailsContent = () => {
       </Gradient>
 
       {/** Notification Item */}
-      {circle.status === CIRCLE_STATUS.active && (
+      {(showCloseRoundCTA || showPendingPayment) && (
         <Box
           paddingHorizontal="l"
           paddingTop="m"
           style={{ marginTop: -theme.spacing.xxxl, zIndex: 1 }}
         >
-          {isCreator && roundDeposits?.allConfirmed ? (
+          {showCloseRoundCTA ? (
             <Box
               backgroundColor="white"
               padding="l"
@@ -477,8 +510,7 @@ const CircleDetailsContent = () => {
                 iconColor={theme.colors.white}
               />
             </Box>
-          ) : !roundDeposits?.allConfirmed &&
-            !roundDeposits?.deposits.some((d) => d.memberId === user?.id) ? (
+          ) : (
             <NotificationItem
               variant="warning"
               title="Pago pendiente"
@@ -486,16 +518,12 @@ const CircleDetailsContent = () => {
               icon={<Clock size={20} color="white" />}
               onAction={() => {}}
             />
-          ) : null}
+          )}
         </Box>
       )}
 
       {/** Send reminder CTA for Pending circle status */}
-      {isCreator &&
-        circle.status === CIRCLE_STATUS.pending &&
-        circle.invitations.some(
-          (invitation) => invitation.status === CIRCLE_INVITATION.pending,
-        ) && (
+      {showSendReminder && (
           <Box
             paddingHorizontal="l"
             paddingTop="m"
@@ -628,10 +656,25 @@ const CircleDetailsContent = () => {
           >
             <List
               items={circle.members.map((member, index) => {
+                const isRecipient =
+                  getCurrentPendingPayment(circle)?.recipientUserId ===
+                  member.userId;
                 const hasDeposited =
                   roundDeposits?.deposits.some(
                     (d) => d.memberId === member.userId,
                   ) ?? false;
+                if (isRecipient) {
+                  return {
+                    id: member.id,
+                    firstName: member.user.firstName,
+                    lastName: member.user.lastName,
+                    avatarUri: member.user.avatarUrl,
+                    avatarBackgroundColor:
+                      index % 2 === 0 ? "gray300" : ("gray400" as const),
+                    badgeLabel: "Recibe",
+                    badgeVariant: "primary" as const,
+                  };
+                }
                 return {
                   id: member.id,
                   firstName: member.user.firstName,

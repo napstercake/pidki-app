@@ -25,12 +25,21 @@ const Pot: React.FC<PotProps> = ({
   formatAmount = defaultFormat,
   cornerBadge = false,
 }) => {
-  const paidCount = roundDeposits?.confirmed ?? 0;
-  const totalCount = roundDeposits?.total ?? circle.members.length;
+  const currentPayment = getCurrentPendingPayment(circle);
+  const recipient = circle.members.find(
+    (m) => m.userId === currentPayment?.recipientUserId,
+  );
+  // The round's recipient doesn't pay themselves, so their share counts as
+  // already in the pot. This keeps the total equal to the full payout.
+  const recipientShare = recipient ? 1 : 0;
+  const payerCount =
+    roundDeposits?.total ?? circle.members.length - recipientShare;
+  const paidCount = (roundDeposits?.confirmed ?? 0) + recipientShare;
+  const totalCount = payerCount + recipientShare;
   const collectedAmount = paidCount * circle.paymentAmount;
   const totalAmount = totalCount * circle.paymentAmount;
   const segments = Math.min(totalCount, maxSegments);
-  const currentRound = getCurrentPendingPayment(circle)?.roundNumber ?? 1;
+  const currentRound = currentPayment?.roundNumber ?? 1;
   const totalRounds = circle.payments.length;
 
   return (
@@ -84,7 +93,9 @@ const Pot: React.FC<PotProps> = ({
         </Box>
 
         <Text variant="caption" color="textSecondary">
-          {paidCount} de {totalCount} aportes recibidos
+          {recipient
+            ? `${paidCount} de ${totalCount} aportes · el de ${recipient.user.firstName} ya está incluido`
+            : `${paidCount} de ${totalCount} aportes recibidos`}
         </Text>
       </Box>
     </Box>
