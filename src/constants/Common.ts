@@ -5,7 +5,7 @@ export const IconStroke = 2.5;
 export const TAB_BAR_CLEARANCE = 120;
 
 export const ContactData = {
-  email: "soporte@pidk.com",
+  email: "support@pidki.com",
   privacyEmail: "privacy@pidki.com",
   phone: "+51 944 944 034",
   whatsapp: "+51 234 456 234",

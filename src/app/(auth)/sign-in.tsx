@@ -2,6 +2,7 @@ import { LoadingSpinner } from "@/components/authorable";
 import { Box } from "@/components/authorable/Box";
 import { Button } from "@/components/authorable/Button";
 import Gradient from "@/components/authorable/Gradient";
+import { LegalFooter } from "@/components/authorable/LegalFooter";
 import { Text } from "@/components/authorable/Text";
 import { TextField } from "@/components/authorable/TextField";
 import { useAuth } from "@/services/AuthContext";
@@ -168,7 +169,7 @@ export default function SignInScreen() {
             </Box>
 
             {/* Forgot password — right-aligned, close to the password field */}
-            <Box alignItems="flex-end" marginBottom="l">
+            <Box alignItems="flex-end">
               <Link href="/(auth)/restore-password" asChild>
                 <TouchableOpacity testID="sign-in-forgot-password-link">
                   <Text
@@ -229,12 +230,7 @@ export default function SignInScreen() {
               </Box>
 
               {/* Footer */}
-              <Box alignItems="center" marginTop="xl">
-                <Text variant="caption" color="gray400" textAlign="center">
-                  Al iniciar sesión, aceptas nuestros Términos de Servicio y
-                  Política de Privacidad
-                </Text>
-              </Box>
+              <LegalFooter prefix="Al iniciar sesión, aceptas nuestros" />
             </Box>
           </Box>
         </Box>

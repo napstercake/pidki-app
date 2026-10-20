@@ -2,6 +2,7 @@ import { Box } from "@/components/authorable/Box";
 import { Button } from "@/components/authorable/Button";
 import Gradient from "@/components/authorable/Gradient";
 import IconButton from "@/components/authorable/IconButton";
+import { LegalFooter } from "@/components/authorable/LegalFooter";
 import { Text } from "@/components/authorable/Text";
 import { TextField } from "@/components/authorable/TextField";
 import { useAuth } from "@/services/AuthContext";
@@ -302,12 +303,7 @@ export default function SignupScreen() {
           </Box>
 
           {/* Footer */}
-          <Box alignItems="center" marginTop="xl">
-            <Text variant="caption" color="textTertiary" textAlign="center">
-              Al crear una cuenta, aceptas nuestros Términos de Servicio y
-              Política de Privacidad
-            </Text>
-          </Box>
+          <LegalFooter prefix="Al crear una cuenta, aceptas nuestros" />
         </Box>
       </ScrollView>
     </KeyboardAvoidingView>
