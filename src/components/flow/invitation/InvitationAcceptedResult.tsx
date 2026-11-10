@@ -4,6 +4,7 @@ import { Box } from "@/components/authorable/Box";
 import { Button } from "@/components/authorable/Button";
 import Gradient from "@/components/authorable/Gradient";
 import { Text } from "@/components/authorable/Text";
+import Confetti from "@/components/Confetti";
 import { Theme } from "@/theme";
 import { Circle } from "@/types/api";
 import { getPaymentPeriodText } from "@/utils/circles";
@@ -138,6 +139,8 @@ const InvitationAcceptedResult: React.FC<InvitationAcceptedResultProps> = ({
           />
         </Box>
       </Box>
+
+      <Confetti />
     </Gradient>
   );
 };

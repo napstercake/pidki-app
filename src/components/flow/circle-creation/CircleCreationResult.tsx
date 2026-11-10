@@ -4,6 +4,7 @@ import { Box } from "@/components/authorable/Box";
 import { Button } from "@/components/authorable/Button";
 import Gradient from "@/components/authorable/Gradient";
 import { Text } from "@/components/authorable/Text";
+import Confetti from "@/components/Confetti";
 import SuccessAnimation from "@/components/SuccessAnimation";
 import { Theme } from "@/theme";
 import { Circle } from "@/types/api";
@@ -134,6 +135,8 @@ const CircleCreationResult: React.FC<CircleCreationResultProps> = ({
           />
         </Box>
       </Box>
+
+      <Confetti />
     </Gradient>
   );
 };

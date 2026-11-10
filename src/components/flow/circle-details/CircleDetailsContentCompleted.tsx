@@ -6,6 +6,7 @@ import { Button } from "@/components/authorable/Button";
 import Gradient from "@/components/authorable/Gradient";
 import IconButton from "@/components/authorable/IconButton";
 import { Text } from "@/components/authorable/Text";
+import Confetti from "@/components/Confetti";
 import { Theme } from "@/theme";
 import { Circle } from "@/types/api";
 import { useTheme } from "@shopify/restyle";
@@ -126,6 +127,8 @@ const CircleDetailsContentCompleted: React.FC<
           />
         </Box>
       </Box>
+
+      <Confetti />
     </Gradient>
   );
 };
