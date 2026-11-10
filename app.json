@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "pidki-app",
+    "name": "PIDKI",
     "slug": "pidki-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,16 +8,18 @@
     "scheme": "pidkiapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.pidki.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.pidki.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#F277C7"
+      }
     },
     "web": {
       "output": "static",
@@ -28,13 +30,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon.png",
+          "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0645EA",
-          "dark": {
-            "backgroundColor": "#0645EA"
-          }
+          "backgroundColor": "#F277C7"
         }
       ],
       "@react-native-community/datetimepicker",
@@ -47,6 +46,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "3c324a9c-ccc7-40c9-a46a-fac7ade15a42"
+      }
     }
   }
 }
