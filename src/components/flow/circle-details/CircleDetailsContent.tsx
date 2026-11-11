@@ -225,7 +225,8 @@ const CircleDetailsContent = () => {
       await verifyPaymentMutation.mutateAsync({
         paymentAmount: circle.paymentAmount,
       });
-      await refetchCircle();
+      // Close as soon as the API confirms; waiting for the refetch would show
+      // the idle "Sí" button again for a moment.
       setShowPaymentDialog(false);
 
       if (isLast) {
@@ -241,6 +242,8 @@ const CircleDetailsContent = () => {
         );
         setShowSuccessDialog(true);
       }
+
+      await refetchCircle();
     } catch (error: any) {
       setShowPaymentDialog(false);
       console.error("Error marking payment as paid:", error);
@@ -274,8 +277,10 @@ const CircleDetailsContent = () => {
         roundNumber: currentPayment.roundNumber,
         memberId: pendingMemberPaymentId,
       });
-      await Promise.all([refetchCircle(), refetchDeposits()]);
+      // Close as soon as the API confirms; waiting for the refetch would show
+      // the idle "Sí" button again for a moment.
       setShowMemberPaymentDialog(false);
+      await Promise.all([refetchCircle(), refetchDeposits()]);
     } catch (error: any) {
       setShowMemberPaymentDialog(false);
       setDialogTitle("Error");

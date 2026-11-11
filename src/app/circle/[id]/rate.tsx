@@ -13,7 +13,7 @@ import { Circle } from "@/types/api";
 import { useTheme } from "@shopify/restyle";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Check, ChevronLeft, Star, X } from "lucide-react-native";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
 
 interface MemberRating {
@@ -221,6 +221,7 @@ function RateMembersContent() {
                     firstName={member.user.firstName}
                     lastName={member.user.lastName}
                     backgroundColor="primary"
+                    uri={member.user.avatarUrl}
                   />
                   <Box flex={1} marginLeft="m">
                     <Text variant="bodyBold" color="text" marginBottom="xs">
@@ -257,7 +258,7 @@ function RateMembersContent() {
           size="large"
           marginTop="l"
           iconPosition="right"
-          icon={<Check size={22} color={theme.colors.white} />}
+          icon={<Check size={22} color={theme.colors.text} />}
         />
       </ScrollView>
 
