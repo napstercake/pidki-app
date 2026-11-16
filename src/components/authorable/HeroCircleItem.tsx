@@ -27,21 +27,28 @@ const HeroCircleItem = ({ circle, onPress }: Props) => {
         <Box
           flexDirection="row"
           justifyContent="space-between"
-          alignItems="center"
+          alignItems="flex-start"
           marginBottom="m"
         >
-          <Box>
-            <Text variant="titleBold" color="text">
+          <Box flex={1} flexShrink={1} marginRight="s">
+            <Text
+              variant="titleBold"
+              color="text"
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
               {circle.name}
             </Text>
             <Text variant="captionItalic" color="textSecondary">
               Ronda {roundProgress.current}/{roundProgress.total}
             </Text>
           </Box>
-          <AvatarGroup
-            members={circle.members}
-            maxVisible={MAX_VISIBLE_AVATARS}
-          />
+          <Box flexShrink={0}>
+            <AvatarGroup
+              members={circle.members}
+              maxVisible={MAX_VISIBLE_AVATARS}
+            />
+          </Box>
         </Box>
 
         {/* Stat section */}
