@@ -16,6 +16,19 @@ export const useUpdateProfile = () => {
   });
 };
 
+export const useDeleteAccount = () => {
+  const { token, logout } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (password: string) => UsersApi.deleteAccount(token!, password),
+    onSuccess: async () => {
+      queryClient.clear();
+      await logout();
+    },
+  });
+};
+
 export const useUploadAvatar = () => {
   const { token, refreshUser } = useAuth();
 

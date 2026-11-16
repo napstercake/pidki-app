@@ -86,6 +86,10 @@ export default function RootLayout() {
             <Stack.Screen name="about" options={{ headerShown: false }} />
             <Stack.Screen name="developer" options={{ headerShown: false }} />
             <Stack.Screen
+              name="delete-account"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="notifications"
               options={{ headerShown: false }}
             />

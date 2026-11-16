@@ -273,3 +273,10 @@ export interface RateUserResponse {
     totalRatings: number;
   };
 }
+
+export interface DeleteAccountBlockingCircle {
+  id: string;
+  name: string;
+  status: CircleStatusType;
+  role: "CREATOR" | "MEMBER";
+}

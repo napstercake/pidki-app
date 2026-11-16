@@ -21,6 +21,7 @@ import {
   Mail,
   PiggyBank,
   ShieldHalf,
+  Trash2,
   User,
 } from "lucide-react-native";
 import React, { useState } from "react";
@@ -67,6 +68,12 @@ export default function ProfileScreen() {
       icon: <HelpCircle size={20} color={theme.colors.textSecondary} />,
       title: "Preguntas frecuentes",
       onPress: handleNavigateToFAQ,
+    },
+    {
+      icon: <Trash2 size={20} color={theme.colors.error} />,
+      title: "Eliminar cuenta",
+      onPress: () => router.push("/delete-account"),
+      destructive: true,
     },
     /* {
       icon: <Settings size={20} color={theme.colors.textSecondary} />,
@@ -234,7 +241,7 @@ export default function ProfileScreen() {
                 {item.icon}
                 <Text
                   variant="body"
-                  color="text"
+                  color={item.destructive ? "error" : "text"}
                   style={{ flex: 1 }}
                   marginLeft="m"
                 >

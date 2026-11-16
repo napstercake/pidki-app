@@ -1,4 +1,5 @@
 import { AlertDialog, Avatar } from "@/components/authorable";
+import { CircleOptionsMenu } from "@/components/flow/circle-details/CircleOptionsMenu";
 import { AvatarGroup } from "@/components/authorable/AvatarGroup";
 import { Badge } from "@/components/authorable/Badge";
 import { Box } from "@/components/authorable/Box";
@@ -85,13 +86,7 @@ const CircleDraw = ({ circle, onDrawCompleted }: CircleDrawProps) => {
             <IconButton onPress={() => router.back()}>
               <ChevronLeft size={20} color={theme.colors.white} />
             </IconButton>
-            {isCreator && (
-              <IconButton onPress={() => {}}>
-                <Text variant="bodyBold" color="white">
-                  ···
-                </Text>
-              </IconButton>
-            )}
+            {isCreator && <CircleOptionsMenu circle={circle} />}
           </Box>
 
           <Box gap="s">

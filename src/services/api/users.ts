@@ -10,6 +10,13 @@ import {
   UserRating,
 } from '@/types/api';
 
+export class ApiError extends Error {
+  constructor(message: string, public status: number, public data: any) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 const request = async <T>(endpoint: string, options: RequestInit = {}, token?: string): Promise<T> => {
@@ -20,8 +27,8 @@ const request = async <T>(endpoint: string, options: RequestInit = {}, token?: s
   };
   if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(url, { ...options, headers });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.message || 'API request failed');
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new ApiError(data.message || 'API request failed', response.status, data);
   return data;
 };
 
@@ -41,6 +48,13 @@ export const UsersApi = {
 
   updateProfile: (token: string, data: { firstName?: string; lastName?: string }) =>
     request<{ success: boolean; data: { user: User } }>('/user/profile', { method: 'PATCH', body: JSON.stringify(data) }, token),
+
+  deleteAccount: (token: string, password: string) =>
+    request<{ success: boolean; message: string }>(
+      '/user/profile',
+      { method: 'DELETE', body: JSON.stringify({ password }) },
+      token
+    ),
 
   uploadAvatar: (token: string, formData: FormData) =>
     requestMultipart<{ success: boolean; data: { avatarUrl: string } }>('/user/avatar', formData, token),

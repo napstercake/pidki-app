@@ -4,6 +4,7 @@ import { Box } from "@/components/authorable/Box";
 import { Button } from "@/components/authorable/Button";
 import CircleBadge from "@/components/authorable/CircleBadge";
 import CircleIcon from "@/components/authorable/CircleIcon";
+import { CircleOptionsMenu } from "./CircleOptionsMenu";
 import { ErrorScreen } from "@/components/authorable/ErrorScreen";
 import Gradient from "@/components/authorable/Gradient";
 import IconButton from "@/components/authorable/IconButton";
@@ -22,7 +23,6 @@ import {
   CIRCLE_STATUS,
 } from "@/constants/circles";
 import {
-  useCancelCircle,
   useConfirmMemberPayment,
   useVerifyPayment,
 } from "@/hooks/mutations/useCircleMutations";
@@ -44,7 +44,6 @@ import {
   Frown,
   HandCoins,
   Send,
-  Trash2,
   X,
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -54,9 +53,7 @@ import {
   Modal,
   RefreshControl,
   ScrollView,
-  TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from "react-native";
 
 const CloseRoundCTA: React.FC<{
@@ -123,9 +120,6 @@ const CircleDetailsContent = () => {
   const theme = useTheme<Theme>();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { token, user } = useAuth();
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [cancelConfirmation, setCancelConfirmation] = useState("");
-  const [cancelError, setCancelError] = useState<string | null>(null);
   // Kept here (not in CircleDraw) because the draw flips the circle to ACTIVE,
   // which unmounts CircleDraw once the refetched circle arrives.
   const [drawnCircle, setDrawnCircle] = useState<Circle | null>(null);
@@ -137,7 +131,6 @@ const CircleDetailsContent = () => {
   const [showMemberPaymentDialog, setShowMemberPaymentDialog] = useState(false);
   const [showReminderModal, setShowReminderModal] = useState(false);
   const [isSendingReminder, setIsSendingReminder] = useState(false);
-  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [pendingMemberPaymentId, setPendingMemberPaymentId] = useState<
     string | null
   >(null);
@@ -162,7 +155,6 @@ const CircleDetailsContent = () => {
     currentRoundNumber,
   );
 
-  const cancelCircleMutation = useCancelCircle();
   const verifyPaymentMutation = useVerifyPayment(id ?? "");
   const confirmMemberPaymentMutation = useConfirmMemberPayment(id ?? "");
 
@@ -328,37 +320,6 @@ const CircleDetailsContent = () => {
     }
   };
 
-  const handleCancelCircle = async () => {
-    if (!circle) return;
-
-    // Errors are shown inside the cancel modal: opening the error dialog (a
-    // second Modal) on top of it leaves the screen unresponsive.
-    if (cancelConfirmation !== circle.name) {
-      setCancelError(
-        "Por favor escribe exactamente el nombre del círculo para confirmar la cancelación.",
-      );
-      return;
-    }
-
-    setCancelError(null);
-    try {
-      await cancelCircleMutation.mutateAsync(circle.id);
-      closeCancelModal();
-      router.replace("/circles");
-    } catch (error: any) {
-      setCancelError(
-        circle.status === CIRCLE_STATUS.active
-          ? "Un círculo activo no se puede eliminar."
-          : error?.message || "No se pudo cancelar el círculo.",
-      );
-    }
-  };
-
-  const closeCancelModal = () => {
-    setShowCancelModal(false);
-    setCancelConfirmation("");
-    setCancelError(null);
-  };
 
   if (drawnCircle) {
     return (
@@ -449,13 +410,7 @@ const CircleDetailsContent = () => {
             <IconButton onPress={() => router.back()}>
               <ChevronLeft size={20} color={theme.colors.white} />
             </IconButton>
-            {isCreator && (
-              <IconButton onPress={() => setShowOptionsMenu(true)}>
-                <Text variant="bodyBold" color="white">
-                  ···
-                </Text>
-              </IconButton>
-            )}
+            {isCreator && <CircleOptionsMenu circle={circle} />}
           </Box>
 
           <Box gap="s">
@@ -738,161 +693,6 @@ const CircleDetailsContent = () => {
             </Card>
           )} */}
       </ScrollView>
-
-      {/* Options Menu */}
-      <Modal
-        visible={showOptionsMenu}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowOptionsMenu(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setShowOptionsMenu(false)}>
-          <Box flex={1}>
-            <TouchableWithoutFeedback>
-              <Box
-                style={{
-                  position: "absolute",
-                  top: 70,
-                  right: theme.spacing.xl,
-                  width: 220,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 12,
-                  elevation: 8,
-                }}
-              >
-                <Box
-                  backgroundColor="white"
-                  borderRadius="m"
-                  style={{ overflow: "hidden" }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      setShowOptionsMenu(false);
-                      setShowCancelModal(true);
-                    }}
-                  >
-                    <Box
-                      flexDirection="row"
-                      alignItems="center"
-                      gap="m"
-                      paddingVertical="m"
-                      paddingHorizontal="l"
-                    >
-                      <Trash2 size={18} color={theme.colors.error} />
-                      <Text variant="body" color="error">
-                        Eliminar círculo
-                      </Text>
-                    </Box>
-                  </TouchableOpacity>
-                </Box>
-              </Box>
-            </TouchableWithoutFeedback>
-          </Box>
-        </TouchableWithoutFeedback>
-      </Modal>
-
-      {/* Cancel Circle Modal */}
-      <Modal
-        visible={showCancelModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => {
-          if (cancelCircleMutation.isPending) return;
-          closeCancelModal();
-        }}
-      >
-        <Box
-          flex={1}
-          backgroundColor="background"
-          alignItems="center"
-          justifyContent="center"
-          paddingHorizontal="l"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-        >
-          <Box
-            backgroundColor="white"
-            padding="l"
-            borderRadius="m"
-            width="100%"
-            maxWidth={400}
-          >
-            <Box alignItems="center" marginBottom="l">
-              <Text
-                variant="titleBold"
-                color="error"
-                textAlign="center"
-                marginBottom="s"
-              >
-                ⚠️ Cancelar Círculo
-              </Text>
-              <Text variant="body" color="textSecondary" textAlign="center">
-                Esta acción no se puede deshacer. Todos los participantes serán
-                notificados.
-              </Text>
-            </Box>
-
-            <Box marginBottom="l">
-              <Text variant="body" color="text" marginBottom="s">
-                Para confirmar, escribe el nombre del círculo:
-              </Text>
-              <Text variant="bodyBold" color="text" marginBottom="m">
-                &quot;{circle?.name}&quot;
-              </Text>
-
-              <TextInput
-                style={{
-                  borderWidth: 1,
-                  borderColor: theme.colors.gray300,
-                  borderRadius: theme.borderRadii.s,
-                  padding: theme.spacing.m,
-                  fontSize: 16,
-                  color: theme.colors.text,
-                }}
-                placeholder="Escribe el nombre del círculo"
-                value={cancelConfirmation}
-                onChangeText={(text) => {
-                  setCancelConfirmation(text);
-                  setCancelError(null);
-                }}
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!cancelCircleMutation.isPending}
-              />
-              {cancelError && (
-                <Text variant="caption" color="error" marginTop="s">
-                  {cancelError}
-                </Text>
-              )}
-            </Box>
-
-            <Box flexDirection="row" alignItems="center" gap="m">
-              <TouchableOpacity
-                onPress={() => {
-                  if (cancelCircleMutation.isPending) return;
-                  closeCancelModal();
-                }}
-                activeOpacity={0.7}
-              >
-                <CircleIcon
-                  size="medium"
-                  icon={<X size={20} color={theme.colors.textSecondary} />}
-                />
-              </TouchableOpacity>
-              <Button
-                title="Eliminar Círculo"
-                size="large"
-                variant="secondary"
-                onPress={handleCancelCircle}
-                loading={cancelCircleMutation.isPending}
-                disabled={cancelConfirmation !== circle?.name}
-                flex={1}
-              />
-            </Box>
-          </Box>
-        </Box>
-      </Modal>
 
       {/* Send Reminder Modal */}
       <Modal
